@@ -4,10 +4,21 @@ interface FooterProps {
   onGenerate: () => void;
   onExplore: () => void;
   onShare: () => void;
+  onSave: () => void;
+  onLoad: () => void;
+  hasSaved: boolean;
   loading?: boolean;
 }
 
-export default function Footer({ onGenerate, onExplore, onShare, loading = false }: FooterProps) {
+export default function Footer({
+  onGenerate,
+  onExplore,
+  onShare,
+  onSave,
+  onLoad,
+  hasSaved,
+  loading = false,
+}: FooterProps) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -51,6 +62,26 @@ export default function Footer({ onGenerate, onExplore, onShare, loading = false
         >
           SHARE
         </button>
+
+        <button
+          type="button"
+          className="si-btn si-btn--secondary si-btn--lg"
+          onClick={onSave}
+          title="Salvar configuração atual no navegador"
+        >
+          💾 SALVAR
+        </button>
+
+        {hasSaved && (
+          <button
+            type="button"
+            className="si-btn si-btn--secondary si-btn--lg si-btn--saved"
+            onClick={onLoad}
+            title="Carregar configuração salva"
+          >
+            ↩ CARREGAR
+          </button>
+        )}
       </div>
 
       <div className="si-footer__credit">

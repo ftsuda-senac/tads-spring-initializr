@@ -2,11 +2,12 @@ import { useReducer, useCallback, useState, useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { projectReducer } from '../reducers/projectReducer';
 import { INITIAL_STATE } from '../models/projectState';
-import { SPRING_BOOT_VERSIONS } from '../models/springBootVersions';
 import { getDependencyById } from '../models/dependencies';
 import { generateAllFiles } from '../generators/index';
 import { buildAndDownloadZip } from '../services/zipBuilder';
 import { buildShareUrl, pushStateToUrl, readStateFromUrl } from '../services/share';
+import { useSpringVersions } from '../hooks/useSpringVersions';
+import { saveState, hasSavedState, loadSavedState } from '../services/localSave';
 
 import Header from '../components/layout/Header';
 import Banner from '../components/layout/Banner';
@@ -78,9 +79,13 @@ export default function GeneratorPage() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [showAllErrors, setShowAllErrors] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [hasSaved, setHasSaved] = useState(() => hasSavedState());
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load state from ?config= on first render
+  // Spring Boot versions — rule: major >= 4 enabled, older disabled
+  const springVersions = useSpringVersions();
+
+  // Load state from URL on first render
   useEffect(() => {
     const loaded = readStateFromUrl();
     if (loaded) dispatch({ type: 'LOAD_STATE', payload: loaded });
@@ -92,7 +97,7 @@ export default function GeneratorPage() {
     toastTimer.current = setTimeout(() => setToast(null), 2800);
   }, []);
 
-  const springBootOptions: RadioOption[] = SPRING_BOOT_VERSIONS.map((v) => ({
+  const springBootOptions: RadioOption[] = springVersions.map((v) => ({
     value: v.version,
     label: v.version,
     disabled: !v.enabled,
@@ -177,6 +182,20 @@ export default function GeneratorPage() {
       showToast('Link gerado — copie da barra de endereços.');
     }
   }, [state, showToast]);
+
+  const handleSave = useCallback(() => {
+    saveState(state);
+    setHasSaved(true);
+    showToast('Configuração salva no navegador!');
+  }, [state, showToast]);
+
+  const handleLoad = useCallback(() => {
+    const loaded = loadSavedState(springVersions);
+    if (loaded) {
+      dispatch({ type: 'LOAD_STATE', payload: loaded });
+      showToast('Configuração carregada!');
+    }
+  }, [springVersions, showToast]);
 
   return (
     <div className="si-page">
@@ -335,6 +354,9 @@ export default function GeneratorPage() {
         onGenerate={() => void handleGenerate()}
         onExplore={() => void handleExplore()}
         onShare={() => void handleShare()}
+        onSave={handleSave}
+        onLoad={handleLoad}
+        hasSaved={hasSaved}
         loading={loading}
       />
 

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="72" fill="#191E1E"/>
+  <!-- Spring leaf -->
+  <path d="M256 72
+    C 200 90 148 130 136 190
+    C 120 262 154 322 200 358
+    C 220 374 240 382 256 384
+    C 272 382 292 374 312 358
+    C 358 322 392 262 376 190
+    C 364 130 312 90 256 72 Z"
+    fill="#6db33f"/>
+  <!-- Stem curl -->
+  <path d="M256 384
+    C 256 406 240 420 218 428
+    C 196 436 170 430 156 416"
+    stroke="#6db33f" stroke-width="22" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Highlight veins -->
+  <path d="M256 120 C 256 200 256 300 256 384"
+    stroke="#4a8a2a" stroke-width="10" fill="none" opacity="0.5"/>
+  <path d="M256 200 C 230 220 210 240 200 268"
+    stroke="#4a8a2a" stroke-width="8" fill="none" opacity="0.4"/>
+  <path d="M256 200 C 282 220 302 240 312 268"
+    stroke="#4a8a2a" stroke-width="8" fill="none" opacity="0.4"/>
+</svg>

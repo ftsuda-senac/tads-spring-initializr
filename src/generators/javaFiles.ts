@@ -72,8 +72,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "tb_exemplo")
 public class ExemploEntity {
 
 \t@Id
@@ -180,7 +182,7 @@ public interface ExemploRepository extends JpaRepository<ExemploEntity, Integer>
 \tOptional<ExemploEntity> findExemploJpql(@Param("tipo") String tipo);
 
 \t// Exemplo de uso de SQL Nativo com @NativeQuery - Usar o nome da tabela gerada no banco de dados
-\t@NativeQuery("SELECT * FROM exemplo WHERE tipo = :tipo") // Ou @Query igual acima com nativeQuery = true
+\t@NativeQuery("SELECT * FROM tb_exemplo WHERE tipo = :tipo") // Ou @Query acima com nativeQuery = true
 \tOptional<ExemploEntity> findExemploSqlNativo(@Param("tipo") String tipo);
 
 }
@@ -217,21 +219,25 @@ public class ExemploService {
 \t}
 
 \tpublic List<ExemploDto> findAll() {
-\t\t// Alternativa funcional: return repository.findAll().stream().map(this::toDto).toList();
 \t\tList<ExemploDto> resultado = new ArrayList<>();
 \t\tfor (ExemploEntity entity : repository.findAll()) {
 \t\t\tresultado.add(toDto(entity));
 \t\t}
 \t\treturn resultado;
+
+\t\t// *** Alternativa funcional:
+\t\t// return repository.findAll().stream().map(this::toDto).toList();
 \t}
 
 \tpublic Optional<ExemploDto> findByTipo(String tipo) {
-\t\t// Alternativa funcional: return repository.findByTipo(tipo).map(this::toDto);
 \t\tOptional<ExemploEntity> encontrado = repository.findByTipo(tipo);
 \t\tif (encontrado.isPresent()) {
 \t\t\treturn Optional.of(toDto(encontrado.get()));
 \t\t}
 \t\treturn Optional.empty();
+
+\t\t// *** Alternativa funcional:
+\t\t// return repository.findByTipo(tipo).map(this::toDto);
 \t}
 
 \tpublic ExemploDto addNew(ExemploDto dto) {
@@ -240,8 +246,10 @@ public class ExemploService {
 \t\treturn toDto(salvo);
 \t}
 
-\tprivate ExemploDto toDto(ExemploEntity e) {
-\t\treturn new ExemploDto(e.getId(), e.getTipo(), e.getMensagem());
+\t // ##### FUNÇÕES MAPPERS (Mapeamento Dto para Entity e vice-versa)
+
+\tprivate ExemploDto toDto(ExemploEntity entity) {
+\t\treturn new ExemploDto(entity.getId(), entity.getTipo(), entity.getMensagem());
 \t}
 
 \tprivate ExemploEntity toEntity(ExemploDto dto) {
@@ -277,12 +285,10 @@ public class ExemploService {
 \tprivate final AtomicInteger counter = new AtomicInteger(1);
 
 \tpublic ExemploService() {
-\t\tExemploDto d1 = new ExemploDto(counter.getAndIncrement(), "exemplo", "Primeiro registro pré-populado");
-\t\tExemploDto d2 = new ExemploDto(counter.getAndIncrement(), "teste", "Segundo registro pré-populado");
-\t\tExemploDto d3 = new ExemploDto(counter.getAndIncrement(), "demo", "Terceiro registro pré-populado");
-\t\tdados.put(d1.getTipo(), d1);
-\t\tdados.put(d2.getTipo(), d2);
-\t\tdados.put(d3.getTipo(), d3);
+\t\tdados.put(d1.getTipo(), new ExemploDto(counter.getAndIncrement(), "hello", "Hello Spring Boot"));
+\t\tdados.put(d1.getTipo(), new ExemploDto(counter.getAndIncrement(), "exemplo", "Exemplo de dados"));
+\t\tdados.put(d2.getTipo(), new ExemploDto(counter.getAndIncrement(), "teste", "Teste"));
+\t\tdados.put(d3.getTipo(), new ExemploDto(counter.getAndIncrement(), "demo", "Dados da aplicação de demonstração"));
 \t}
 
 \tpublic List<ExemploDto> findAll() {
