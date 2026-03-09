@@ -163,13 +163,25 @@ package ${pkg}.repository;
 
 import ${pkg}.model.ExemploEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ExemploRepository extends JpaRepository<ExemploEntity, Integer> {
 
+\t// Exemplo de Derived Query: Spring Data gera o SQL automaticamente a partir do nome do método
+\t// formado por "findBy" + nome do campo "tipo" presente na classe ExemploEntity
 \tOptional<ExemploEntity> findByTipo(String tipo);
+
+\t// Exemplo de uso do JPQL com @Query - Usar o nome da classe Entity
+\t@Query("SELECT e FROM ExemploEntity e WHERE e.tipo = :tipo")
+\tOptional<ExemploEntity> findExemploJpql(@Param("tipo") String tipo);
+
+\t// Exemplo de uso de SQL Nativo com @NativeQuery - Usar o nome da tabela gerada no banco de dados
+\t@NativeQuery("SELECT * FROM exemplo WHERE tipo = :tipo") // Ou @Query igual acima com nativeQuery = true
+\tOptional<ExemploEntity> findExemploSqlNativo(@Param("tipo") String tipo);
 
 }
 `;

@@ -27,7 +27,7 @@ export function generateIndexHtml(state: ProjectState, hash: string): string {
 
   const links: string[] = [];
   if (hasThymeleaf) {
-    links.push(`    <li><a href="/exemplos">Listagem de exemplos (Thymeleaf)</a></li>`);
+    links.push(`    <li><a href="/exemplos">Tela de listagem de exemplo (Thymeleaf)</a></li>`);
   } else {
     links.push(`    <li><a href="/swagger-ui.html">Swagger UI — documentação da API REST</a></li>`);
   }
@@ -72,6 +72,7 @@ export function generateIndexHtml(state: ProjectState, hash: string): string {
   <h2>Links de apoio do projeto</h2>
   <ul>
 ${links.join('\n')}
+    <li><a href="https://github.com/ftsuda-senac/dicas-desenvolvimento/blob/main/Dicas-e-Tutoriais-Spring.md" target="_blank" rel="noopener noreferrer">Dicas e Tutoriais Spring</a></li>
   </ul>
 
   <div class="curiosity">
@@ -204,10 +205,10 @@ export function generateHelpMd(state: ProjectState): string {
   return `# ${state.name}
 
 > **Observação — Spring Initializr Customizado**
-> Este projeto foi gerado pelo **Spring Initializr Customizado**, uma ferramenta
-> didática para a disciplina de Desenvolvimento de Software Web no SENAC TADS.
+> Este projeto foi gerado pelo **TADS Spring Initializr customizado**, uma ferramenta
+> didática para a disciplina de Desenvolvimento de Sistemas Web no curso TADS do Senac.
 > A estrutura gerada é equivalente à do [Spring Initializr oficial](https://start.spring.io),
-> porém inclui por conveniência algumas dependências adicionais não presentes no gerador
+> porém inclui algumas dependências adicionais não presentes no gerador
 > original (ex: Springdoc OpenAPI/Swagger, Thymeleaf Layout Dialect, WebJars).
 
 ## Dependências selecionadas
@@ -217,7 +218,7 @@ ${depsSection}
 ## Como executar
 
 Este projeto foi criado para ser aberto diretamente na IDE de sua preferência
-(IntelliJ IDEA, Eclipse, VS Code com extensão Java, etc.). Importe-o como um
+(IntelliJ IDEA, Eclipse, STS, VS Code com extensão Java, etc.). Importe-o como um
 projeto Maven existente e aguarde o download das dependências.
 
 ### Pré-requisitos
@@ -265,5 +266,6 @@ java -jar target/${state.artifact}-0.0.1-SNAPSHOT.jar
 - [Guias do Spring](https://spring.io/guides)
 - [Spring Initializr oficial](https://start.spring.io)
 - [Como gerar os arquivos do Maven Wrapper](https://mkyong.com/maven/how-to-generate-maven-wrapper-files-mvnw-and-mvnw-cmd/)
+- [Dicas e Tutoriais Spring](https://github.com/ftsuda-senac/dicas-desenvolvimento/blob/main/Dicas-e-Tutoriais-Spring.md)
 `;
 }

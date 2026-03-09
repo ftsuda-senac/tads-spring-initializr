@@ -1,6 +1,6 @@
 # TADS Spring Initializr
 
-Versão didática do [Spring Initializr](https://start.spring.io) desenvolvida para a disciplina de **Desenvolvimento de Software Web** do curso **TADS — Tecnologia em Análise e Desenvolvimento de Sistemas** do SENAC.
+Versão didática do [Spring Initializr](https://start.spring.io) desenvolvida para a disciplina de **Desenvolvimento de Sistemas Web** do curso **TADS - Análise e Desenvolvimento de Sistemas** do SENAC.
 
 ## O que é
 
@@ -21,9 +21,7 @@ A aplicação está disponível em:
 
 Cada projeto gerado recebe um hash SHA-256 calculado a partir dos dados da equipe (`groupId`, `artifactId`, nomes, usernames GitHub e e-mails). Esse hash é inserido em **todos os arquivos gerados** e permite verificar a autoria sem depender de metadados externos.
 
-> Os dados da equipe **não devem ser alterados manualmente** no `pom.xml` ou em qualquer outro arquivo — qualquer edição invalida o hash. Se necessário corrigir, regenere o projeto com as informações corretas.
-
-A verificação pode ser feita na rota `/verificar` da própria aplicação.
+> Os dados da equipe **não devem ser alterados manualmente** no `pom.xml` ou em qualquer outro arquivo — qualquer edição invalida o hash. Se necessário corrigir, regenerar o projeto com as informações corretas.
 
 ## Stack
 
