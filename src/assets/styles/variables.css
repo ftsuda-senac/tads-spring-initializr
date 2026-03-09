@@ -1,0 +1,80 @@
+/* ─── Spring Initializr — CSS Custom Properties ─────────────────────────── */
+:root {
+  /* Colours */
+  --si-green:           #6db33f;
+  --si-green-hover:     #5a9a34;
+  --si-green-dim:       rgba(109, 179, 63, 0.15);
+
+  --si-bg-dark:         #191e1e;
+  --si-bg-card:         #21282a;
+  --si-bg-input:        #161b1b;
+  --si-bg-hover:        #252d2d;
+
+  --si-border:          #2e3838;
+  --si-border-focus:    #6db33f;
+
+  --si-text:            #e2e8e8;
+  --si-text-muted:      #7a9090;
+  --si-text-disabled:   #8aabab;
+
+  --si-banner-bg:       #2d2600;
+  --si-banner-border:   #4a3e00;
+  --si-banner-text:     #e8c840;
+
+  --si-tooltip-bg:      #1a2222;
+  --si-tooltip-border:  #3a4848;
+
+  /* Code viewer */
+  --si-code-bg:         #0f1117;
+  --si-code-text:       #cdd6f4;
+
+  /* Typography */
+  --si-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+             'Helvetica Neue', Arial, sans-serif;
+  --si-font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* Spacing */
+  --si-space-xs:   0.25rem;
+  --si-space-sm:   0.5rem;
+  --si-space-md:   1rem;
+  --si-space-lg:   1.5rem;
+  --si-space-xl:   2rem;
+
+  /* Radii */
+  --si-radius-sm:  3px;
+  --si-radius-md:  6px;
+  --si-radius-pill: 100px;
+
+  /* Transitions */
+  --si-transition: 0.14s ease;
+
+  /* Layout */
+  --si-header-height: 58px;
+  --si-footer-height: 96px;
+  --si-max-width:     1200px;
+}
+
+/* ─── Light theme overrides ─────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  --si-bg-dark:         #f5f7f5;
+  --si-bg-card:         #ffffff;
+  --si-bg-input:        #f0f5f0;
+  --si-bg-hover:        #eaf2ea;
+
+  --si-border:          #c5d8b8;
+  --si-border-focus:    #6db33f;
+
+  --si-text:            #1e2d1e;
+  --si-text-muted:      #5a7a5a;
+  --si-text-disabled:   #7a9a7a;
+
+  --si-banner-bg:       #fffbeb;
+  --si-banner-border:   #fde68a;
+  --si-banner-text:     #78450e;
+
+  --si-tooltip-bg:      #ffffff;
+  --si-tooltip-border:  #c5d8b8;
+
+  --si-code-bg:         #f8faf8;
+  --si-code-text:       #1e2d1e;
+}
