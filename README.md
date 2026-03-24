@@ -8,7 +8,7 @@ Aplicação 100% frontend que replica o layout e a experiência do Spring Initia
 
 - Opções reduzidas e adaptadas ao contexto da disciplina
 - Identificação da equipe com **hash SHA-256** embutido nos arquivos gerados
-- Geração de código-fonte de exemplo (Controller, Service, Repository, Entity, DTO)
+- Geração opcional de código-fonte de exemplo (Controller, Service, Repository, Entity, DTO)
 - Suporte a Thymeleaf (MVC) e Spring Web (REST + Swagger)
 - Página de verificação de hash para conferência da autoria
 
@@ -21,7 +21,31 @@ A aplicação está disponível em:
 
 Cada projeto gerado recebe um hash SHA-256 calculado a partir dos dados da equipe (`groupId`, `artifactId`, nomes, usernames GitHub e e-mails). Esse hash é inserido em **todos os arquivos gerados** e permite verificar a autoria sem depender de metadados externos.
 
-> Os dados da equipe **não devem ser alterados manualmente** no `pom.xml` ou em qualquer outro arquivo — qualquer edição invalida o hash. Se necessário corrigir, regenerar o projeto com as informações corretas.
+> Os dados da equipe **não devem ser alterados manualmente** no `pom.xml` ou em qualquer outro arquivo — qualquer edição invalida o hash. Se necessário corrigir, regenere o projeto com as informações corretas.
+
+## Geração de classes de exemplo
+
+O formulário oferece a opção **Gerar classes de exemplo**, que controla quais arquivos são incluídos no projeto gerado:
+
+| Opção | Arquivos gerados |
+|-------|-----------------|
+| **Não** (padrão) | `Application.java`, `application.properties`, `pom.xml`, `.gitignore`, `.editorconfig`, `HELP.md`, `static/index.html`, `.gitkeep` nas pastas vazias |
+| **Sim** | Todos os anteriores + `ExemploController`, `ExemploService`, `ExemploDto`, `ExemploEntity` (se JPA), `ExemploRepository` (se JPA), `DatabaseInitializer` (se JPA), `SecurityConfig` (se Security), `OpenApiConfig` (se Web sem Thymeleaf), templates Thymeleaf (se Thymeleaf) |
+
+As dependências selecionadas e as configurações do `application.properties` são sempre geradas, independentemente da opção escolhida.
+
+## Versões do Spring Boot e Java
+
+As versões disponíveis são obtidas dinamicamente:
+
+| Campo | Fonte | Fallback |
+|-------|-------|---------|
+| **Spring Boot** | GitHub Releases (`spring-projects/spring-boot`) | Lista estática definida em `springBootVersions.ts` |
+| **Java** | `application.yml` do repositório `spring-io/start.spring.io` (via GitHub raw content) | `25`, `21`, `17` |
+
+A busca usa `sessionStorage` para evitar requisições repetidas na mesma sessão. A versão padrão disponível é selecionada automaticamente quando a lista é carregada.
+
+> O acesso direto à API do `start.spring.io` é bloqueado por CORS no contexto de páginas estáticas. Por isso, as versões do Java são obtidas via `raw.githubusercontent.com`, que suporta CORS de qualquer origem.
 
 ## Stack
 
@@ -44,11 +68,11 @@ src/
 ├── components/          # Componentes React (layout, form, dependências, common)
 ├── generators/          # Funções puras de geração de arquivos (pom.xml, Java, HTML…)
 ├── hash/                # Cálculo SHA-256 e injeção nos arquivos
-├── hooks/               # useTheme
-├── models/              # Interfaces, catálogo de dependências, versões do Spring Boot
+├── hooks/               # useSpringVersions, useJavaVersions, useTheme
+├── models/              # Interfaces, catálogo de dependências, versões estáticas
 ├── pages/               # GeneratorPage e VerifyPage
 ├── reducers/            # projectReducer (useReducer centralizado)
-└── services/            # zipBuilder, share (URL de compartilhamento)
+└── services/            # zipBuilder, share (URL de compartilhamento), localSave
 ```
 
 ## Desenvolvimento local
@@ -91,13 +115,6 @@ O deploy é feito automaticamente via **GitHub Actions** ao fazer push na branch
 5. Faz commit e push do `package.json` atualizado com a nova versão
 
 A versão atual da aplicação é injetada nos arquivos gerados via `__APP_VERSION__` (Vite `define`).
-
-## Versões do Spring Boot suportadas
-
-| Versão | Status |
-|--------|--------|
-| 4.0.3 | Habilitada (padrão) |
-| 3.5.x | Visível, desabilitada |
 
 ## Licença
 

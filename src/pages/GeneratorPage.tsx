@@ -7,6 +7,7 @@ import { generateAllFiles } from '../generators/index';
 import { buildAndDownloadZip } from '../services/zipBuilder';
 import { buildShareUrl, pushStateToUrl, readStateFromUrl } from '../services/share';
 import { useSpringVersions } from '../hooks/useSpringVersions';
+import { useJavaVersions } from '../hooks/useJavaVersions';
 import { saveState, hasSavedState, loadSavedState } from '../services/localSave';
 
 import Header from '../components/layout/Header';
@@ -42,12 +43,6 @@ const PACKAGING_OPTIONS: RadioOption[] = [
 const CONFIGURATION_OPTIONS: RadioOption[] = [
   { value: 'properties', label: 'Properties' },
   { value: 'yaml', label: 'YAML', disabled: true },
-];
-
-const JAVA_OPTIONS: RadioOption[] = [
-  { value: '25', label: '25' },
-  { value: '21', label: '21' },
-  { value: '17', label: '17' },
 ];
 
 // ── Validation ────────────────────────────────────────────────────────────
@@ -115,6 +110,26 @@ export default function GeneratorPage() {
     value: v.version,
     label: v.version,
     disabled: !v.enabled,
+  }));
+
+  // Java versions — fetched from start.spring.io metadata API
+  const javaVersions = useJavaVersions();
+
+  // Auto-select the default version whenever the Java version list updates
+  useEffect(() => {
+    if (javaVersions.length === 0) return;
+    const current = javaVersions.find((v) => v.version === state.javaVersion);
+    if (!current) {
+      const defaultVersion = javaVersions.find((v) => v.default) ?? javaVersions[0];
+      if (defaultVersion) {
+        dispatch({ type: 'SET_JAVA_VERSION', payload: defaultVersion.version });
+      }
+    }
+  }, [javaVersions]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const javaOptions: RadioOption[] = javaVersions.map((v) => ({
+    value: v.version,
+    label: v.version,
   }));
 
   // Ctrl+B → open dependency modal
@@ -301,12 +316,12 @@ export default function GeneratorPage() {
                     <RadioGroup
                       label="Java (JDK)"
                       name="javaVersion"
-                      options={JAVA_OPTIONS}
+                      options={javaOptions}
                       value={state.javaVersion}
                       onChange={(v) =>
                         dispatch({
                           type: 'SET_JAVA_VERSION',
-                          payload: v as '21',
+                          payload: v,
                         })
                       }
                     />

@@ -17,7 +17,7 @@ import {
 } from './javaFiles';
 import { generateProperties } from './propertiesFile';
 import { generateListaHtml, generateFormHtml } from './thymeleafTemplates';
-import { generateGitignore, generateEditorconfig, generateHelpMd, generateIndexHtml } from './staticFiles';
+import { generateGitignore, generateEditorconfig, generateHelpMd, generateIndexHtml, generateExemploHtml } from './staticFiles';
 
 // ── Path helpers ──────────────────────────────────────────────────────────────
 
@@ -100,10 +100,11 @@ export async function generateAllFiles(
         files[`${mainResources}/templates/exemplos/form.html`] = generateFormHtml(state, hash);
       }
 
-      // R2: web + NOT thymeleaf → REST controller + OpenApiConfig
+      // R2: web + NOT thymeleaf → REST controller + OpenApiConfig + exemplo.html
       if (hasWeb && !hasThymeleaf) {
         files[`${mainJava}/controller/ExemploRestController.java`] = generateRestController(state, hash);
         files[`${mainJava}/config/OpenApiConfig.java`] = generateOpenApiConfig(state, hash);
+        files[`${mainResources}/static/exemplo.html`] = generateExemploHtml(state, hash);
       }
     }
 

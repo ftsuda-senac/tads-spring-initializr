@@ -8,7 +8,7 @@ export type ProjectType = 'maven' | 'gradle-groovy' | 'gradle-kotlin';
 export type Language = 'java' | 'kotlin' | 'groovy';
 export type Packaging = 'jar' | 'war';
 export type Configuration = 'properties' | 'yaml';
-export type JavaVersion = '17' | '21' | '25';
+export type JavaVersion = string;
 
 export interface ProjectState {
   project: ProjectType;
