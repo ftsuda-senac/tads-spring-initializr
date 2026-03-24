@@ -60,6 +60,7 @@ export function decodeState(params: URLSearchParams): ProjectState | null {
       group, artifact, name, description: desc, packageName: pkg,
       packaging, configuration, javaVersion,
       dependencies, developers,
+      generateExamples: INITIAL_STATE.generateExamples,
     };
   } catch {
     return null;
