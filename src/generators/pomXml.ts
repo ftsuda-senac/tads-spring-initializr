@@ -39,6 +39,7 @@ const ANNOTATION_PROCESSOR_IDS = new Set(['lombok', 'configuration-processor']);
  * Hash is embedded after </developers> per R9.
  */
 export function generatePomXml(state: ProjectState, hash: string): string {
+  const appVersion = __APP_VERSION__;
   const deps = state.dependencies;
 
   const hasThymeleaf     = deps.includes('thymeleaf');
@@ -237,6 +238,7 @@ export function generatePomXml(state: ProjectState, hash: string): string {
 \t<developers>
 ${developersXml}
 \t</developers>
+\t<!-- Versão do TADS Spring Initializr: ${appVersion} -->
 \t<!-- hash-identificacao: ${hash} -->
 
 \t<properties>

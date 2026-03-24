@@ -214,6 +214,9 @@ public class ExemploService {
 
 \tprivate final ExemploRepository repository;
 
+\t// Construtor usado para injeção de dependência do bean ExemploRepository
+\t// Substitui a necessidade de criar manualmente uma instância do repository, o Spring faz isso automaticamente
+\t// Não usar o @Autowired (injeção por campo) em projetos modernos
 \tpublic ExemploService(ExemploRepository repository) {
 \t\tthis.repository = repository;
 \t}
@@ -230,11 +233,13 @@ public class ExemploService {
 \t}
 
 \tpublic Optional<ExemploDto> findByTipo(String tipo) {
-\t\tOptional<ExemploEntity> encontrado = repository.findByTipo(tipo);
-\t\tif (encontrado.isPresent()) {
-\t\t\treturn Optional.of(toDto(encontrado.get()));
+\t\tOptional<ExemploEntity> optEntity = repository.findByTipo(tipo);
+\t\tif (optEntity.isEmpty()) {
+\t\t\treturn Optional.empty();
 \t\t}
-\t\treturn Optional.empty();
+\t\tExemploEntity entity = optEntity.get();
+\t\tExemploDto dto = toDto(entity);
+\t\treturn Optional.of(dto);
 
 \t\t// *** Alternativa funcional:
 \t\t// return repository.findByTipo(tipo).map(this::toDto);
@@ -271,24 +276,24 @@ package ${pkg}.service;
 import ${pkg}.dto.ExemploDto;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class ExemploService {
 
-\t// tipo é chave única: cada entrada do mapa representa um tipo diferente
-\tprivate final Map<String, ExemploDto> dados = new HashMap<>();
-\tprivate final AtomicInteger counter = new AtomicInteger(1);
+\t// tipo é chave única no formato String: cada objeto no map (valor) é identificado por seu tipo único
+\tprivate final Map<String, ExemploDto> dados = new ConcurrentHashMap<>();
+\tprivate final AtomicInteger counter = new AtomicInteger(0);
 
 \tpublic ExemploService() {
-\t\tdados.put(d1.getTipo(), new ExemploDto(counter.getAndIncrement(), "hello", "Hello Spring Boot"));
-\t\tdados.put(d1.getTipo(), new ExemploDto(counter.getAndIncrement(), "exemplo", "Exemplo de dados"));
-\t\tdados.put(d2.getTipo(), new ExemploDto(counter.getAndIncrement(), "teste", "Teste"));
-\t\tdados.put(d3.getTipo(), new ExemploDto(counter.getAndIncrement(), "demo", "Dados da aplicação de demonstração"));
+\t\tdados.put("hello", new ExemploDto(counter.incrementAndGet(), "hello", "Hello Spring Boot"));
+\t\tdados.put("exemplo", new ExemploDto(counter.incrementAndGet(), "exemplo", "Exemplo de dados"));
+\t\tdados.put("teste", new ExemploDto(counter.incrementAndGet(), "teste", "Teste"));
+\t\tdados.put("demo", new ExemploDto(counter.incrementAndGet(), "demo", "Dados da aplicação de demonstração"));
 \t}
 
 \tpublic List<ExemploDto> findAll() {
@@ -300,7 +305,7 @@ public class ExemploService {
 \t}
 
 \tpublic ExemploDto addNew(ExemploDto dto) {
-\t\tExemploDto novo = new ExemploDto(counter.getAndIncrement(), dto.getTipo(), dto.getMensagem());
+\t\tExemploDto novo = new ExemploDto(counter.incrementAndGet(), dto.getTipo(), dto.getMensagem());
 \t\tdados.put(novo.getTipo(), novo);
 \t\treturn novo;
 \t}
@@ -328,6 +333,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/exemplos")
@@ -335,6 +341,9 @@ public class ExemploRestController {
 
 \tprivate final ExemploService service;
 
+\t// Construtor usado para injeção de dependência do bean ExemploService
+\t// Substitui a necessidade de criar manualmente uma instância do service, o Spring faz isso automaticamente
+\t// Não usar o @Autowired (injeção por campo) em projetos modernos
 \tpublic ExemploRestController(ExemploService service) {
 \t\tthis.service = service;
 \t}
@@ -346,9 +355,17 @@ public class ExemploRestController {
 
 \t@GetMapping("/{tipo}")
 \tpublic ResponseEntity<ExemploDto> buscarPorTipo(@PathVariable String tipo) {
-\t\treturn service.findByTipo(tipo)
-\t\t\t\t.map(ResponseEntity::ok)
-\t\t\t\t.orElse(ResponseEntity.notFound().build());
+\t\tOptional<ExemploDto> optDado = service.findByTipo(tipo);
+\t\tif (optDado.isEmpty()) {
+\t\t\treturn ResponseEntity.notFound().build();
+\t\t}
+\t\tExemploDto dados = optDado.get();  
+\t\treturn ResponseEntity.ok(dados);
+
+\t\t// *** Alternativa funcional:
+\t\t// return service.findByTipo(tipo)
+\t\t//\t\t.map(ResponseEntity::ok)
+\t\t//\t\t.orElse(ResponseEntity.notFound().build());
 \t}
 
 \t@PostMapping
@@ -395,13 +412,13 @@ public class ExemploController {
 \t}
 
 \t@GetMapping("/novo")
-\tpublic String novo(Model model) {
+\tpublic String mostrarFormNovo(Model model) {
 \t\tmodel.addAttribute("exemplo", new ExemploDto(null, "", ""));
 \t\treturn "exemplos/form";
 \t}
 
 \t@PostMapping
-\tpublic String salvar(@ModelAttribute ExemploDto dto, RedirectAttributes redirectAttributes) {
+\tpublic String salvarNovo(@ModelAttribute ExemploDto dto, RedirectAttributes redirectAttributes) {
 \t\tservice.addNew(dto);
 \t\tredirectAttributes.addFlashAttribute("mensagemSucesso", "Registro adicionado com sucesso!");
 \t\treturn "redirect:/exemplos";

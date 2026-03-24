@@ -115,7 +115,7 @@ export default function TeamSection({ developers, dispatch, showAllErrors = fals
       </div>
 
       <p className="si-team-section__notice">
-        ⚠ Os dados da equipe <strong>não devem ser alterados manualmente</strong> no{' '}
+        ⚠ Os dados da equipe <strong>NÃO devem ser alterados manualmente</strong> no{' '}
         <code>pom.xml</code> — qualquer edição invalida o hash de identificação.
         Se necessário corrigir, regenere o projeto com as informações corretas.
       </p>
@@ -190,7 +190,7 @@ export default function TeamSection({ developers, dispatch, showAllErrors = fals
                     htmlFor={`dev-${index}-github`}
                     className="si-field__label"
                   >
-                    GitHub
+                    Username GitHub
                   </label>
                   <input
                     id={`dev-${index}-github`}
@@ -211,6 +211,7 @@ export default function TeamSection({ developers, dispatch, showAllErrors = fals
                     }
                     aria-invalid={!!(devTouched.github && devErrors.github)}
                   />
+                  <span className="si-field__hint">Somente o username sem o prefixo "https://github.com/"</span>
                   {devTouched.github && devErrors.github && (
                     <span
                       id={`dev-${index}-github-err`}
@@ -249,6 +250,7 @@ export default function TeamSection({ developers, dispatch, showAllErrors = fals
                     }
                     aria-invalid={!!(devTouched.email && devErrors.email)}
                   />
+                  <span className="si-field__hint">Qualquer e-mail válido</span>
                   {devTouched.email && devErrors.email && (
                     <span
                       id={`dev-${index}-email-err`}
