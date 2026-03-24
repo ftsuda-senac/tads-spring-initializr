@@ -17,6 +17,7 @@ import ProjectMetadata from '../components/form/ProjectMetadata';
 import DependencyModal from '../components/dependencies/DependencyModal';
 import DependencyTag from '../components/dependencies/DependencyTag';
 import TeamSection from '../components/form/TeamSection';
+import GenerateExamplesSection from '../components/form/GenerateExamplesSection';
 import ExploreModal from '../components/explore/ExploreModal';
 
 // ── Static option lists ───────────────────────────────────────────────────
@@ -84,6 +85,19 @@ export default function GeneratorPage() {
 
   // Spring Boot versions — rule: major >= 4 enabled, older disabled
   const springVersions = useSpringVersions();
+
+  // Auto-select the default enabled version whenever the version list updates
+  // (e.g. after the GitHub API response resolves and replaces the static list)
+  useEffect(() => {
+    if (springVersions.length === 0) return;
+    const current = springVersions.find((v) => v.version === state.springBootVersion);
+    if (!current || !current.enabled) {
+      const defaultVersion = springVersions.find((v) => v.default) ?? springVersions.find((v) => v.enabled);
+      if (defaultVersion) {
+        dispatch({ type: 'SET_SPRING_BOOT_VERSION', payload: defaultVersion.version });
+      }
+    }
+  }, [springVersions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load state from URL on first render
   useEffect(() => {
@@ -283,18 +297,24 @@ export default function GeneratorPage() {
                       })
                     }
                   />
-                  <RadioGroup
-                    label="Java"
-                    name="javaVersion"
-                    options={JAVA_OPTIONS}
-                    value={state.javaVersion}
-                    onChange={(v) =>
-                      dispatch({
-                        type: 'SET_JAVA_VERSION',
-                        payload: v as '21',
-                      })
-                    }
-                  />
+                  <div className="si-java-section">
+                    <RadioGroup
+                      label="Java (JDK)"
+                      name="javaVersion"
+                      options={JAVA_OPTIONS}
+                      value={state.javaVersion}
+                      onChange={(v) =>
+                        dispatch({
+                          type: 'SET_JAVA_VERSION',
+                          payload: v as '21',
+                        })
+                      }
+                    />
+                    <p className="si-java-section__hint">
+                      Verifique sua versão com o comando{' '}
+                      <strong><code>java -version</code></strong> no terminal.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -340,6 +360,12 @@ export default function GeneratorPage() {
               </div>
             </div>
           </form>
+
+          {/* Generate examples section — full width, between metadata and team */}
+          <GenerateExamplesSection
+            generateExamples={state.generateExamples}
+            dispatch={dispatch}
+          />
 
           {/* Team section — full width below the two columns */}
           <TeamSection

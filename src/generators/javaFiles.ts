@@ -477,6 +477,69 @@ public class SecurityConfig {
 `;
 }
 
+// ── DatabaseInitializer.java ──────────────────────────────────────────────────────
+
+export function generateDatabaseInitializer(state: ProjectState, hash: string): string {
+  const pkg = state.packageName;
+  return `// hash-identificacao: ${hash}
+${WARNING_COMMENT}
+package ${pkg}.config;
+
+import ${pkg}.model.ExemploEntity;
+import ${pkg}.repository.ExemploRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+// Carrega dados iniciais no banco se ele estiver vazio.
+// Sua lógica é executada automaticamente na inicialização da aplicação graças ao CommandLineRunner e ao bean ser um @Component.
+// ATENÇÃO: Esta classe é gerada apenas para fins didáticos, para exemplificar o uso do repository e JPA.
+// Em projetos reais, considere usar arquivos de importação SQL ou ferramentas de migração como Flyway ou Liquibase.
+@Component
+public class DatabaseInitializer implements CommandLineRunner {
+
+\tprivate final ExemploRepository repository;
+
+\tpublic DatabaseInitializer(ExemploRepository repository) {
+\t\tthis.repository = repository;
+\t}
+
+\t@Override
+\tpublic void run(String... args) throws Exception {
+\t\tif (repository.count() > 0) {
+\t\t\treturn;
+\t\t}
+\t\tList<ExemploEntity> dados = new ArrayList<>();
+
+\t\tExemploEntity e1 = new ExemploEntity();
+\t\te1.setTipo("hello");
+\t\te1.setMensagem("Hello Spring Boot");
+\t\tdados.add(e1);
+
+\t\tExemploEntity e2 = new ExemploEntity();
+\t\te2.setTipo("exemplo");
+\t\te2.setMensagem("Exemplo de dados");
+\t\tdados.add(e2);
+
+\t\tExemploEntity e3 = new ExemploEntity();
+\t\te3.setTipo("teste");
+\t\te3.setMensagem("Teste");
+\t\tdados.add(e3);
+
+\t\tExemploEntity e4 = new ExemploEntity();
+\t\te4.setTipo("demo");
+\t\te4.setMensagem("Dados da aplicação de demonstração");
+\t\tdados.add(e4);
+
+\t\trepository.saveAll(dados);
+\t}
+
+}
+`;
+}
+
 // ── OpenApiConfig.java ────────────────────────────────────────────────────────
 
 export function generateOpenApiConfig(state: ProjectState, hash: string): string {

@@ -25,10 +25,13 @@ export function generateIndexHtml(state: ProjectState, hash: string): string {
     ? `<ul>\n${devItems}\n    </ul>`
     : '<p><em>Nenhum desenvolvedor informado.</em></p>';
 
+  const hasWeb = deps.includes('web');
+
   const links: string[] = [];
-  if (hasThymeleaf) {
+  if (hasWeb && hasThymeleaf) {
     links.push(`    <li><a href="/exemplos">Tela de listagem de exemplo (Thymeleaf)</a></li>`);
-  } else {
+  }
+  if (hasWeb && !hasThymeleaf) {
     links.push(`    <li><a href="/swagger-ui.html">Swagger UI — documentação da API REST</a></li>`);
   }
   if (hasH2) {
@@ -132,6 +135,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### VARIÁVEIS DE AMBIENTE (dotenv) ###
+### Arquivos de configuração local que podem conter segredos (ex: credenciais de banco, chaves de API).
+### Estes arquivos NÃO devem ser versionados para evitar exposição acidental de informações sensíveis.
+### Eles NÃO são gerados pelo Spring Initializr oficial, mas foram incluídos neste projeto para fins didáticos e de conveniência.
+.env
+.env.local
 `;
 }
 

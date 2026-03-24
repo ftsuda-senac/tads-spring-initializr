@@ -30,6 +30,7 @@ export type ProjectAction =
   | { type: 'ADD_DEVELOPER' }
   | { type: 'REMOVE_DEVELOPER'; payload: number }
   | { type: 'UPDATE_DEVELOPER'; payload: { index: number; field: keyof Developer; value: string } }
+  | { type: 'SET_GENERATE_EXAMPLES'; payload: boolean }
   | { type: 'RESET' }
   | { type: 'LOAD_STATE'; payload: ProjectState };
 
@@ -117,6 +118,9 @@ export function projectReducer(
       );
       return { ...state, developers: updated };
     }
+
+    case 'SET_GENERATE_EXAMPLES':
+      return { ...state, generateExamples: action.payload };
 
     case 'RESET':
       return INITIAL_STATE;

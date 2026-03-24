@@ -365,6 +365,26 @@ legend {
   margin-top: var(--si-space-sm);
 }
 
+/* ── Java section (radio + hint) ────────────────────────────────────────── */
+.si-java-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.si-java-section__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--si-text-muted);
+  line-height: 1.4;
+}
+
+.si-java-section__hint code {
+  font-family: monospace;
+  font-size: 0.85em;
+  color: var(--si-text);
+}
+
 /* ── Tooltip ────────────────────────────────────────────────────────────── */
 .si-tooltip-wrapper {
   position: relative;
@@ -880,6 +900,32 @@ legend {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+/* ── Generate examples section ──────────────────────────────────────────── */
+.si-generate-examples-section {
+  margin-top: var(--si-space-lg);
+  border: 1px solid var(--si-border);
+  border-radius: var(--si-radius-md);
+  overflow: hidden;
+  padding: 0.9rem var(--si-space-xl);
+  background: var(--si-bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--si-space-sm);
+}
+
+.si-generate-examples-section__hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--si-text-muted);
+  line-height: 1.5;
+}
+
+.si-generate-examples-section__hint code {
+  font-family: monospace;
+  font-size: 0.85em;
+  color: var(--si-text);
 }
 
 /* ── Team section ───────────────────────────────────────────────────────── */

@@ -27,6 +27,7 @@ export interface ProjectState {
 
   dependencies: string[];
   developers: Developer[];
+  generateExamples: boolean;
 }
 
 export const DEFAULT_DEVELOPER: Developer = {
@@ -63,4 +64,5 @@ export const INITIAL_STATE: ProjectState = {
 
   dependencies: [],
   developers: [{ name: '', github: '', email: '' }],
+  generateExamples: false,
 };

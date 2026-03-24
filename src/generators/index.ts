@@ -13,6 +13,7 @@ import {
   generateMvcController,
   generateSecurityConfig,
   generateOpenApiConfig,
+  generateDatabaseInitializer,
 } from './javaFiles';
 import { generateProperties } from './propertiesFile';
 import { generateListaHtml, generateFormHtml } from './thymeleafTemplates';
@@ -62,48 +63,57 @@ export async function generateAllFiles(
   files[`${root}/.editorconfig`] = generateEditorconfig();
   files[`${root}/HELP.md`] = generateHelpMd(state);
 
-  // ── Static resources when webmvc is selected ──────────────────────────────
+  // ── Static index.html (always generated when web is selected) ───────────
 
   if (hasWeb) {
     files[`${mainResources}/static/index.html`] = generateIndexHtml(state, hash);
-    if (!hasThymeleaf) {
+  } else {
+    files[`${mainResources}/static/.gitkeep`] = '';
+  }
+
+  if (state.generateExamples) {
+    // ── Example classes (when web or thymeleaf present) ───────────────────
+
+    if (hasWeb && !hasThymeleaf) {
       // thymeleaf already generates real files inside templates/
       files[`${mainResources}/templates/.gitkeep`] = '';
     }
-  }
 
-  // ── Business logic: Dto and Service (when web or thymeleaf present) ────────
+    const hasWebLayer = hasWeb || hasThymeleaf;
 
-  const hasWebLayer = hasWeb || hasThymeleaf;
+    if (hasWebLayer) {
+      files[`${mainJava}/dto/ExemploDto.java`] = generateDto(state, hash);
+      files[`${mainJava}/service/ExemploService.java`] = generateService(state, hash);
 
-  if (hasWebLayer) {
-    files[`${mainJava}/dto/ExemploDto.java`] = generateDto(state, hash);
-    files[`${mainJava}/service/ExemploService.java`] = generateService(state, hash);
+      // R3: JPA → Entity + Repository + DatabaseInitializer
+      if (hasJpa) {
+        files[`${mainJava}/model/ExemploEntity.java`] = generateEntity(state, hash);
+        files[`${mainJava}/repository/ExemploRepository.java`] = generateRepository(state, hash);
+        files[`${mainJava}/config/DatabaseInitializer.java`] = generateDatabaseInitializer(state, hash);
+      }
+      // R4: !JPA → in-memory service (already handled in generateService)
 
-    // R3: JPA → Entity + Repository
-    if (hasJpa) {
-      files[`${mainJava}/model/ExemploEntity.java`] = generateEntity(state, hash);
-      files[`${mainJava}/repository/ExemploRepository.java`] = generateRepository(state, hash);
+      // R1: thymeleaf → MVC controller + templates
+      if (hasThymeleaf) {
+        files[`${mainJava}/controller/ExemploController.java`] = generateMvcController(state, hash);
+        files[`${mainResources}/templates/exemplos/lista.html`] = generateListaHtml(state, hash);
+        files[`${mainResources}/templates/exemplos/form.html`] = generateFormHtml(state, hash);
+      }
+
+      // R2: web + NOT thymeleaf → REST controller + OpenApiConfig
+      if (hasWeb && !hasThymeleaf) {
+        files[`${mainJava}/controller/ExemploRestController.java`] = generateRestController(state, hash);
+        files[`${mainJava}/config/OpenApiConfig.java`] = generateOpenApiConfig(state, hash);
+      }
     }
-    // R4: !JPA → in-memory service (already handled in generateService)
 
-    // R1: thymeleaf → MVC controller + templates
-    if (hasThymeleaf) {
-      files[`${mainJava}/controller/ExemploController.java`] = generateMvcController(state, hash);
-      files[`${mainResources}/templates/exemplos/lista.html`] = generateListaHtml(state, hash);
-      files[`${mainResources}/templates/exemplos/form.html`] = generateFormHtml(state, hash);
+    // R5: security or oauth2-resource-server → SecurityConfig
+    if (hasSecurity) {
+      files[`${mainJava}/config/SecurityConfig.java`] = generateSecurityConfig(state, hash);
     }
-
-    // R2: web + NOT thymeleaf → REST controller + OpenApiConfig
-    if (hasWeb && !hasThymeleaf) {
-      files[`${mainJava}/controller/ExemploRestController.java`] = generateRestController(state, hash);
-      files[`${mainJava}/config/OpenApiConfig.java`] = generateOpenApiConfig(state, hash);
-    }
-  }
-
-  // R5: security or oauth2-resource-server → SecurityConfig
-  if (hasSecurity) {
-    files[`${mainJava}/config/SecurityConfig.java`] = generateSecurityConfig(state, hash);
+  } else {
+    // ── Sem exemplos: apenas marcador de pasta para templates ─────────────
+    files[`${mainResources}/templates/.gitkeep`] = '';
   }
 
   return files;
