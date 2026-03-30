@@ -369,7 +369,7 @@ public class ExemploRestController {
 \t}
 
 \t@PostMapping
-\tpublic ResponseEntity<ExemploDto> adicionar(@RequestBody ExemploDto dto) {
+\tpublic ResponseEntity<ExemploDto> incluirNovo(@RequestBody ExemploDto dto) {
 \t\treturn ResponseEntity.ok(service.addNew(dto));
 \t}
 
@@ -412,13 +412,13 @@ public class ExemploController {
 \t}
 
 \t@GetMapping("/novo")
-\tpublic String mostrarFormNovo(Model model) {
+\tpublic String incluirNovoForm(Model model) {
 \t\tmodel.addAttribute("exemplo", new ExemploDto(null, "", ""));
 \t\treturn "exemplos/form";
 \t}
 
 \t@PostMapping
-\tpublic String salvarNovo(@ModelAttribute ExemploDto dto, RedirectAttributes redirectAttributes) {
+\tpublic String incluirNovo(@ModelAttribute ExemploDto dto, RedirectAttributes redirectAttributes) {
 \t\tservice.addNew(dto);
 \t\tredirectAttributes.addFlashAttribute("mensagemSucesso", "Registro adicionado com sucesso!");
 \t\treturn "redirect:/exemplos";

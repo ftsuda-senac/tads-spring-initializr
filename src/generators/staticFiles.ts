@@ -345,9 +345,11 @@ build/
 ### VARIÁVEIS DE AMBIENTE (dotenv) ###
 ### Arquivos de configuração local que podem conter segredos (ex: credenciais de banco, chaves de API).
 ### Estes arquivos NÃO devem ser versionados para evitar exposição acidental de informações sensíveis.
+### Manter somente uma versão de exemplo (.env.example) com valores fictícios para referência.
 ### Eles NÃO são gerados pelo Spring Initializr oficial, mas foram incluídos neste projeto para fins didáticos e de conveniência.
 .env
-.env.local
+.env.*
+!.env.example
 `;
 }
 
