@@ -102,13 +102,6 @@ export function generatePomXml(state: ProjectState, hash: string): string {
     compileDeps.push('');
   }
 
-  // Auto-include: web + NOT thymeleaf → springdoc OpenAPI 3 (R2)
-  if (hasWeb && !hasThymeleaf) {
-    compileDeps.push(`\t\t<!-- ATENÇÃO: A dependência abaixo NÃO é gerada pelo Spring Initializr oficial. -->`);
-    compileDeps.push(
-      depXml('org.springdoc', 'springdoc-openapi-starter-webmvc-ui', { version: '3.0.2' })
-    );
-  }
 
   // ── Runtime / optional dependencies ───────────────────────────────────────
 

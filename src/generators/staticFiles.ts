@@ -35,7 +35,9 @@ export function generateIndexHtml(state: ProjectState, hash: string): string {
     if (state.generateExamples) {
       links.push(`    <li><a href="/exemplo.html">Página de exemplo com Fetch API</a></li>`);
     }
-    links.push(`    <li><a href="/swagger-ui.html">Swagger UI — documentação da API REST</a></li>`);
+    if (deps.includes('springdoc-openapi')) {
+      links.push(`    <li><a href="/swagger-ui.html">Swagger UI — documentação da API REST</a></li>`);
+    }
   }
   if (hasH2) {
     links.push(`    <li><a href="/h2-console">H2 Console — banco de dados em memória</a></li>`);
@@ -393,6 +395,7 @@ indent_size = 4
 
 const DEP_LINKS: Record<string, string> = {
   'web': 'https://docs.spring.io/spring-framework/reference/web/webmvc.html',
+  'springdoc-openapi': 'https://springdoc.org/',
   'thymeleaf': 'https://www.thymeleaf.org/documentation.html',
   'validation': 'https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html',
   'devtools': 'https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools',
@@ -405,6 +408,8 @@ const DEP_LINKS: Record<string, string> = {
   'h2': 'https://www.h2database.com/html/main.html',
   'mail': 'https://docs.spring.io/spring-framework/reference/integration/email.html',
   'actuator': 'https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html',
+  'docker-compose': 'https://docs.spring.io/spring-boot/reference/features/dev-services.html#features.dev-services.docker-compose',
+  'mariadb': 'https://mariadb.com/kb/en/mariadb-connector-j/',
 };
 
 export function generateHelpMd(state: ProjectState): string {
@@ -486,4 +491,158 @@ java -jar target/${state.artifact}-0.0.1-SNAPSHOT.jar
 - [Como gerar os arquivos do Maven Wrapper](https://mkyong.com/maven/how-to-generate-maven-wrapper-files-mvnw-and-mvnw-cmd/)
 - [Dicas e Tutoriais Spring](https://github.com/ftsuda-senac/dicas-desenvolvimento/blob/main/Dicas-e-Tutoriais-Spring.md)
 `;
+}
+
+// ── compose.yml ───────────────────────────────────────────────────────────────
+
+export function generateComposeYml(state: ProjectState): string {
+  const deps = state.dependencies;
+  const hasPostgres = deps.includes('postgresql');
+  const hasMysql    = deps.includes('mysql');
+  const hasMariadb  = deps.includes('mariadb');
+  const hasMail     = deps.includes('mail');
+
+  const dbName = state.artifact.toLowerCase().replace(/-/g, '_');
+
+  const serviceBlocks: string[] = [];
+  const volumeNames:   string[] = [];
+
+  // ── PostgreSQL + pgAdmin ──────────────────────────────────────────────────
+  if (hasPostgres) {
+    serviceBlocks.push(
+`  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ${dbName}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5`
+    );
+    volumeNames.push('  postgres-data:');
+
+    serviceBlocks.push(
+`  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/misc/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5`
+    );
+  }
+
+  // ── MySQL ─────────────────────────────────────────────────────────────────
+  if (hasMysql) {
+    const hostPort = hasMariadb ? '3307' : '3306';
+    serviceBlocks.push(
+`  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: ${dbName}
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "${hostPort}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5`
+    );
+    volumeNames.push('  mysql-data:');
+  }
+
+  // ── MariaDB ───────────────────────────────────────────────────────────────
+  if (hasMariadb) {
+    const hostPort = hasMysql ? '3308' : '3306';
+    serviceBlocks.push(
+`  mariadb:
+    image: mariadb:latest
+    environment:
+      MARIADB_DATABASE: ${dbName}
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - "${hostPort}:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5`
+    );
+    volumeNames.push('  mariadb-data:');
+  }
+
+  // ── CloudBeaver (MySQL and/or MariaDB) ────────────────────────────────────
+  if (hasMysql || hasMariadb) {
+    const dependsOnLines: string[] = [];
+    if (hasMysql)   dependsOnLines.push('      mysql:\n        condition: service_healthy');
+    if (hasMariadb) dependsOnLines.push('      mariadb:\n        condition: service_healthy');
+
+    serviceBlocks.push(
+`  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    ports:
+      - "8978:8978"
+    depends_on:
+${dependsOnLines.join('\n')}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8978/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5`
+    );
+  }
+
+  // ── Mailpit ───────────────────────────────────────────────────────────────
+  if (hasMail) {
+    serviceBlocks.push(
+`  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8025/livez"]
+      interval: 10s
+      timeout: 5s
+      retries: 5`
+    );
+  }
+
+  // ── Assemble ──────────────────────────────────────────────────────────────
+  let content =
+    '# Arquivo gerado automaticamente pelo TADS Spring Initializr customizado (versão didática).\n' +
+    '# ATENÇÃO: Este arquivo NÃO é gerado pelo Spring Initializr oficial.\n' +
+    'services:\n';
+
+  if (serviceBlocks.length > 0) {
+    content += '\n' + serviceBlocks.join('\n\n') + '\n';
+  } else {
+    content += '  # Adicione os serviços aqui\n';
+  }
+
+  if (volumeNames.length > 0) {
+    content += '\nvolumes:\n' + volumeNames.join('\n') + '\n';
+  }
+
+  return content;
 }

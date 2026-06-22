@@ -67,12 +67,42 @@ export function decodeState(params: URLSearchParams): ProjectState | null {
   }
 }
 
-/** Returns the shareable URL for the given state. */
+/** Returns the shareable URL for the given state (this tool). */
 export function buildShareUrl(state: ProjectState): string {
   const url = new URL(window.location.href);
   // Replace all existing search params with the encoded state
   url.search = encodeState(state).toString();
   return url.toString();
+}
+
+const PROJECT_TYPE_MAP: Record<ProjectState['project'], string> = {
+  'maven':          'maven-project',
+  'gradle-groovy':  'gradle-project',
+  'gradle-kotlin':  'gradle-project-kotlin',
+};
+
+/**
+ * Builds a URL for the official Spring Initializr (start.spring.io) pre-filled
+ * with the current project configuration.
+ * Developer info and generateExamples are specific to this tool and are omitted.
+ */
+export function buildOfficialStartUrl(state: ProjectState): string {
+  const params = new URLSearchParams();
+  params.set('type',        PROJECT_TYPE_MAP[state.project] ?? 'maven-project');
+  params.set('language',    state.language);
+  params.set('bootVersion', state.springBootVersion);
+  params.set('baseDir',     state.artifact);
+  params.set('groupId',     state.group);
+  params.set('artifactId',  state.artifact);
+  params.set('name',        state.name);
+  params.set('description', state.description);
+  params.set('packageName', state.packageName);
+  params.set('packaging',   state.packaging);
+  params.set('javaVersion', state.javaVersion);
+  if (state.dependencies.length > 0) {
+    params.set('dependencies', state.dependencies.join(','));
+  }
+  return `https://start.spring.io/#${params.toString()}`;
 }
 
 /** Reads query params from the current URL and returns decoded state, or null. */

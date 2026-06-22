@@ -216,7 +216,7 @@ public class ExemploService {
 
 \t// Construtor usado para injeção de dependência do bean ExemploRepository
 \t// Substitui a necessidade de criar manualmente uma instância do repository, o Spring faz isso automaticamente
-\t// Não usar o @Autowired (injeção por campo) em projetos modernos
+\t// Evitar usar o @Autowired (injeção por campo) em projetos modernos
 \tpublic ExemploService(ExemploRepository repository) {
 \t\tthis.repository = repository;
 \t}
@@ -343,7 +343,7 @@ public class ExemploRestController {
 
 \t// Construtor usado para injeção de dependência do bean ExemploService
 \t// Substitui a necessidade de criar manualmente uma instância do service, o Spring faz isso automaticamente
-\t// Não usar o @Autowired (injeção por campo) em projetos modernos
+\t// Evitar usar o @Autowired (injeção por campo) em projetos modernos
 \tpublic ExemploRestController(ExemploService service) {
 \t\tthis.service = service;
 \t}
@@ -401,6 +401,9 @@ public class ExemploController {
 
 \tprivate final ExemploService service;
 
+\t// Construtor usado para injeção de dependência do bean ExemploService
+\t// Substitui a necessidade de criar manualmente uma instância do service, o Spring faz isso automaticamente
+\t// Evitar usar o @Autowired (injeção por campo) em projetos modernos
 \tpublic ExemploController(ExemploService service) {
 \t\tthis.service = service;
 \t}
@@ -466,7 +469,7 @@ public class SecurityConfig {
 \tpublic CorsConfigurationSource corsConfigurationSource() {
 \t\tCorsConfiguration config = new CorsConfiguration();
 \t\tconfig.setAllowedOriginPatterns(List.of("*"));
-\t\tconfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+\t\tconfig.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 \t\tconfig.setAllowedHeaders(List.of("*"));
 \t\tUrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 \t\tsource.registerCorsConfiguration("/**", config);
@@ -477,9 +480,9 @@ public class SecurityConfig {
 `;
 }
 
-// ── DatabaseInitializer.java ──────────────────────────────────────────────────────
+// ── DataInitializer.java ──────────────────────────────────────────────────────
 
-export function generateDatabaseInitializer(state: ProjectState, hash: string): string {
+export function generateDataInitializer(state: ProjectState, hash: string): string {
   const pkg = state.packageName;
   return `// hash-identificacao: ${hash}
 ${WARNING_COMMENT}
@@ -498,11 +501,11 @@ import java.util.List;
 // ATENÇÃO: Esta classe é gerada apenas para fins didáticos, para exemplificar o uso do repository e JPA.
 // Em projetos reais, considere usar arquivos de importação SQL ou ferramentas de migração como Flyway ou Liquibase.
 @Component
-public class DatabaseInitializer implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
 
 \tprivate final ExemploRepository repository;
 
-\tpublic DatabaseInitializer(ExemploRepository repository) {
+\tpublic DataInitializer(ExemploRepository repository) {
 \t\tthis.repository = repository;
 \t}
 

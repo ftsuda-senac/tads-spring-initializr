@@ -81,6 +81,16 @@ export const DEPENDENCIES: Dependency[] = [
     groupId: 'org.springframework.boot',
     artifactId: 'spring-boot-starter-webmvc',
   },
+  {
+    id: 'springdoc-openapi',
+    name: 'SpringDoc OpenAPI',
+    description:
+      'Add OpenAPI / Swagger documentation to web-based Spring applications.',
+    category: 'WEB',
+    groupId: 'org.springdoc',
+    artifactId: 'springdoc-openapi-starter-webmvc-ui',
+    version: '3.0.3',
+  },
   // ── TEMPLATE ENGINES ─────────────────────────────────────────────────────
   {
     id: 'thymeleaf',

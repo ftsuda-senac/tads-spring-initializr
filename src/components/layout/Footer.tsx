@@ -4,6 +4,7 @@ interface FooterProps {
   onGenerate: () => void;
   onExplore: () => void;
   onShare: () => void;
+  onShareOfficial: () => void;
   onSave: () => void;
   onLoad: () => void;
   hasSaved: boolean;
@@ -14,6 +15,7 @@ export default function Footer({
   onGenerate,
   onExplore,
   onShare,
+  onShareOfficial,
   onSave,
   onLoad,
   hasSaved,
@@ -58,9 +60,18 @@ export default function Footer({
           type="button"
           className="si-btn si-btn--secondary si-btn--lg"
           onClick={onShare}
-          title="Compartilhar configuração"
+          title="Compartilhar configuração desta ferramenta"
         >
           SHARE
+        </button>
+
+        <button
+          type="button"
+          className="si-btn si-btn--secondary si-btn--lg"
+          onClick={onShareOfficial}
+          title="Abrir configuração no Spring Initializr oficial (start.spring.io)"
+        >
+          🍃 SHARE OFICIAL
         </button>
 
         <button

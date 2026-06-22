@@ -793,6 +793,7 @@ legend {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   padding: 0.75rem 1.5rem;
   border-top: 1px solid var(--si-border);
   flex-shrink: 0;
@@ -1444,6 +1445,103 @@ legend {
   color: #e06060;
 }
 
+.si-verify-hash--match {
+  color: var(--si-green);
+}
+
+.si-verify-hash__badge {
+  font-weight: 700;
+}
+
+/* ── Hash info block ────────────────────────────────────────────────────── */
+.si-verify-info {
+  background: var(--si-input-bg, #0d1117);
+  border: 1px solid var(--si-border);
+  border-left: 3px solid var(--si-green);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.si-verify-info__title {
+  font-weight: 600;
+  color: var(--si-green);
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+}
+
+.si-verify-info__text {
+  margin: 0 0 8px;
+  color: var(--si-text);
+  opacity: 0.85;
+}
+
+.si-verify-info__list {
+  margin: 0 0 10px 18px;
+  padding: 0;
+  color: var(--si-text);
+  opacity: 0.85;
+}
+
+.si-verify-info__list li {
+  margin-bottom: 3px;
+}
+
+.si-verify-info__list ul {
+  margin: 4px 0 4px 16px;
+  padding: 0;
+}
+
+.si-verify-info__formula {
+  margin: 0;
+  padding: 8px 10px;
+  background: rgba(109, 179, 63, 0.06);
+  border-radius: 3px;
+  color: var(--si-text);
+  opacity: 0.9;
+  font-size: 0.78rem;
+}
+
+/* ── Manual hash input ──────────────────────────────────────────────────── */
+.si-verify-manual-hash {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.si-verify-label--optional {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.si-verify-hash-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--si-input-bg, #0d1117);
+  border: 1px solid var(--si-border);
+  border-radius: 4px;
+  color: var(--si-text);
+  font-family: var(--si-font-mono);
+  font-size: 0.78rem;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.si-verify-hash-input:focus {
+  border-color: var(--si-green);
+}
+
+.si-verify-hash-input::placeholder {
+  opacity: 0.4;
+  font-family: var(--si-font-sans, sans-serif);
+  font-size: 0.8rem;
+}
+
 /* ── Developers table ───────────────────────────────────────────────────── */
 .si-verify-table {
   width: 100%;
@@ -1474,8 +1572,167 @@ legend {
 
 .si-verify-back {
   display: flex;
+  gap: 10px;
+  align-items: center;
   justify-content: flex-start;
   padding-bottom: var(--si-space-lg);
+}
+
+/* ── Verdict history note ───────────────────────────────────────────────── */
+.si-verify-verdict__history-note {
+  font-size: 0.78rem;
+  color: var(--si-text-muted);
+  margin: 6px 0 0;
+  font-style: italic;
+}
+
+/* ── Previous entries section (on mismatch) ─────────────────────────────── */
+.si-verify-history {
+  border-top: 1px solid var(--si-border);
+  padding: 16px 20px;
+}
+
+.si-verify-history__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e09040;
+  margin: 0 0 4px;
+}
+
+.si-verify-history__sub {
+  font-size: 0.8rem;
+  color: var(--si-text-muted);
+  margin: 0 0 12px;
+}
+
+/* ── Submission card (used in result section and modal) ─────────────────── */
+.si-history-submission {
+  border: 1px solid var(--si-border);
+  border-radius: var(--si-radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+}
+
+.si-history-submission--valid {
+  border-left: 3px solid var(--si-green);
+}
+
+.si-history-submission--invalid {
+  border-left: 3px solid #e06060;
+}
+
+.si-history-submission__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.si-history-submission__date {
+  color: var(--si-text-muted);
+  font-size: 0.78rem;
+}
+
+.si-history-submission__badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 20px;
+}
+
+.si-history-submission__badge--valid {
+  color: var(--si-green);
+  background: rgba(109, 179, 63, 0.12);
+}
+
+.si-history-submission__badge--invalid {
+  color: #e06060;
+  background: rgba(224, 96, 96, 0.12);
+}
+
+.si-history-submission__inline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.si-history-submission__coord {
+  font-family: var(--si-font-mono);
+  font-size: 0.8rem;
+  color: var(--si-text);
+  white-space: nowrap;
+}
+
+.si-history-submission__hash {
+  font-family: var(--si-font-mono);
+  font-size: 0.76rem;
+  color: var(--si-text-muted);
+  white-space: nowrap;
+}
+
+
+/* ── Modal history variant ──────────────────────────────────────────────── */
+.si-modal--history {
+  max-width: 800px;
+}
+
+.si-modal__body--history {
+  padding: 0 1.5rem;
+  overflow-y: auto;
+}
+
+/* ── History record (modal) ─────────────────────────────────────────────── */
+.si-history-record {
+  border: 1px solid var(--si-border);
+  border-radius: var(--si-radius-sm);
+  margin: 14px 0;
+  overflow: hidden;
+}
+
+.si-history-record__header {
+  background: var(--si-input-bg, #0d1117);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--si-border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.si-history-record__hash {
+  font-family: var(--si-font-mono);
+  font-size: 0.85rem;
+  color: var(--si-text);
+  letter-spacing: 0.03em;
+}
+
+.si-history-record__meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+  color: var(--si-text-muted);
+}
+
+.si-history-record__submissions {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Danger button ──────────────────────────────────────────────────────── */
+.si-btn--danger {
+  background: #b03030;
+  color: #fff;
+  border-color: #b03030;
+}
+
+.si-btn--danger:hover {
+  background: #c93535;
+  border-color: #c93535;
 }
 
 /* ── Light theme specific overrides ─────────────────────────────────────── */

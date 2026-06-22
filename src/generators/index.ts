@@ -13,11 +13,11 @@ import {
   generateMvcController,
   generateSecurityConfig,
   generateOpenApiConfig,
-  generateDatabaseInitializer,
+  generateDataInitializer,
 } from './javaFiles';
 import { generateProperties } from './propertiesFile';
 import { generateListaHtml, generateFormHtml } from './thymeleafTemplates';
-import { generateGitignore, generateEditorconfig, generateHelpMd, generateIndexHtml, generateExemploHtml } from './staticFiles';
+import { generateGitignore, generateEditorconfig, generateHelpMd, generateIndexHtml, generateExemploHtml, generateComposeYml } from './staticFiles';
 
 // ── Path helpers ──────────────────────────────────────────────────────────────
 
@@ -63,6 +63,10 @@ export async function generateAllFiles(
   files[`${root}/.editorconfig`] = generateEditorconfig();
   files[`${root}/HELP.md`] = generateHelpMd(state);
 
+  if (deps.includes('docker-compose')) {
+    files[`${root}/compose.yml`] = generateComposeYml(state);
+  }
+
   // ── Static index.html (always generated when web is selected) ───────────
 
   if (hasWeb) {
@@ -85,11 +89,11 @@ export async function generateAllFiles(
       files[`${mainJava}/dto/ExemploDto.java`] = generateDto(state, hash);
       files[`${mainJava}/service/ExemploService.java`] = generateService(state, hash);
 
-      // R3: JPA → Entity + Repository + DatabaseInitializer
+      // R3: JPA → Entity + Repository + DataInitializer
       if (hasJpa) {
         files[`${mainJava}/model/ExemploEntity.java`] = generateEntity(state, hash);
         files[`${mainJava}/repository/ExemploRepository.java`] = generateRepository(state, hash);
-        files[`${mainJava}/config/DatabaseInitializer.java`] = generateDatabaseInitializer(state, hash);
+        files[`${mainJava}/config/DataInitializer.java`] = generateDataInitializer(state, hash);
       }
       // R4: !JPA → in-memory service (already handled in generateService)
 
@@ -100,11 +104,15 @@ export async function generateAllFiles(
         files[`${mainResources}/templates/exemplos/form.html`] = generateFormHtml(state, hash);
       }
 
-      // R2: web + NOT thymeleaf → REST controller + OpenApiConfig + exemplo.html
+      // R2: web + NOT thymeleaf → REST controller + exemplo.html
       if (hasWeb && !hasThymeleaf) {
         files[`${mainJava}/controller/ExemploRestController.java`] = generateRestController(state, hash);
-        files[`${mainJava}/config/OpenApiConfig.java`] = generateOpenApiConfig(state, hash);
         files[`${mainResources}/static/exemplo.html`] = generateExemploHtml(state, hash);
+
+        // OpenApiConfig only when springdoc-openapi is explicitly selected
+        if (deps.includes('springdoc-openapi')) {
+          files[`${mainJava}/config/OpenApiConfig.java`] = generateOpenApiConfig(state, hash);
+        }
       }
     }
 

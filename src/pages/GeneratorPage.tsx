@@ -5,7 +5,7 @@ import { INITIAL_STATE } from '../models/projectState';
 import { getDependencyById } from '../models/dependencies';
 import { generateAllFiles } from '../generators/index';
 import { buildAndDownloadZip } from '../services/zipBuilder';
-import { buildShareUrl, pushStateToUrl, readStateFromUrl } from '../services/share';
+import { buildShareUrl, buildOfficialStartUrl, pushStateToUrl, readStateFromUrl } from '../services/share';
 import { useSpringVersions } from '../hooks/useSpringVersions';
 import { useJavaVersions } from '../hooks/useJavaVersions';
 import { saveState, hasSavedState, loadSavedState } from '../services/localSave';
@@ -212,6 +212,11 @@ export default function GeneratorPage() {
     }
   }, [state, showToast]);
 
+  const handleShareOfficial = useCallback(() => {
+    const url = buildOfficialStartUrl(state);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }, [state]);
+
   const handleSave = useCallback(() => {
     saveState(state);
     setHasSaved(true);
@@ -395,6 +400,7 @@ export default function GeneratorPage() {
         onGenerate={() => void handleGenerate()}
         onExplore={() => void handleExplore()}
         onShare={() => void handleShare()}
+        onShareOfficial={handleShareOfficial}
         onSave={handleSave}
         onLoad={handleLoad}
         hasSaved={hasSaved}
